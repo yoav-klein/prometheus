@@ -1,7 +1,7 @@
-from flask import Flask, Response
+from flask import Flask, Response, request
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 from prometheus_client import Histogram
-
+from time import sleep
 
 app = Flask(__name__)
 
@@ -20,6 +20,13 @@ def index():
 @app.route("/metrics")
 def metrics():
     return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
+
+@app.route("/delay/<ms>")
+def delay(ms):
+    seconds = int(ms) / 1000
+    sleep(seconds)
+    return "Hello"
+    
 
 
 if __name__ == "__main__":
