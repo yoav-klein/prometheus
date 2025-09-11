@@ -1,0 +1,10 @@
+kind: Pod
+apiVersion: v1
+metadata:
+    name: client
+    namespace: digi
+spec:
+    containers:
+        - name: client
+          image: yoavklein3/net-tools:0.3
+          command: ["sleep", "Infinity"]
