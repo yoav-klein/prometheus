@@ -2,18 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: digi
-  name: server
+  name: prom-lab
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: server
+      app: prom-lab
   template:
     metadata:
       labels:
-        app: server
+        app: prom-lab
       annotations:
-        ad.datadoghq.com/server.checks: |
+        ad.datadoghq.com/prom-lab.checks: |
           {
             "istio": {
               "ad_identifiers": ["proxyv2"],
@@ -21,15 +21,25 @@ spec:
                 {
                   "istio_mesh_endpoint": "http://%%host%%:15020/stats/prometheus",
                   "use_openmetrics": true,
-                  "namespace": "yoav",
+                  "namespace": "toy",
                   "histogram_buckets_as_distributions": true
+                }
+              ]
+            },
+            "openmetrics": {
+              "init_config": {},
+              "instances": [
+                {
+                  "openmetrics_endpoint": "http://%%host%%:%%port%%/metrics",
+                  "namespace": "toy",
+                  "metrics": [".*"]
                 }
               ]
             }
           }    
     spec:
       containers:
-        - name: server
+        - name: prom-lab
           imagePullPolicy: Always
           image: yoavklein3/python-http-server:0.1
           ports:
@@ -38,11 +48,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: server
+  name: prom-lab
   namespace: digi
 spec:
   selector:
-    app: server
+    app: prom-lab
   ports:
     - protocol: TCP
       port: 80
